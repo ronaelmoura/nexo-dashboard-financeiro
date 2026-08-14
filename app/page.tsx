@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -12,10 +12,12 @@ import {
   EyeOff,
   LayoutDashboard,
   Menu,
+  Moon,
   MoreHorizontal,
   Plus,
   Search,
   Settings,
+  Sun,
   Target,
   TrendingUp,
   WalletCards,
@@ -94,6 +96,19 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [transactions, setTransactions] = useState(initialTransactions);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("nexo-theme");
+    const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    setTheme(savedTheme === "dark" || savedTheme === "light" ? savedTheme : preferredTheme);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    localStorage.setItem("nexo-theme", theme);
+  }, [theme]);
 
   const chartData = useMemo(() => {
     if (period === "3 meses") return monthlyData.slice(-3);
@@ -148,6 +163,7 @@ export default function Home() {
           <button className="menu-button" aria-label="Abrir menu" onClick={() => setMobileMenu(true)}><Menu size={22} /></button>
           <div className="mobile-brand">Nexo</div>
           <label className="search-box"><Search size={18} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar transações..." /></label>
+          <button className="icon-button theme-button" aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Modo claro" : "Modo escuro"} onClick={() => setTheme((current) => current === "dark" ? "light" : "dark")}>{theme === "dark" ? <Sun size={19} /> : <Moon size={19} />}</button>
           <button className="icon-button" aria-label="Notificações"><Bell size={20} /><span className="notification-dot" /></button>
           <button className="primary-button" onClick={() => setModalOpen(true)}><Plus size={18} /> Nova transação</button>
         </header>
@@ -178,9 +194,9 @@ export default function Home() {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 16, right: 8, left: -18, bottom: 0 }}>
                     <defs><linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#2525e8" stopOpacity={0.25}/><stop offset="100%" stopColor="#2525e8" stopOpacity={0}/></linearGradient></defs>
-                    <CartesianGrid vertical={false} stroke="#ececf2" strokeDasharray="3 3" />
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: "#8b8b99", fontSize: 12 }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: "#8b8b99", fontSize: 11 }} tickFormatter={(v) => `${v / 1000}k`} />
+                    <CartesianGrid vertical={false} stroke={theme === "dark" ? "#30303d" : "#ececf2"} strokeDasharray="3 3" />
+                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: theme === "dark" ? "#9696a7" : "#8b8b99", fontSize: 12 }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fill: theme === "dark" ? "#9696a7" : "#8b8b99", fontSize: 11 }} tickFormatter={(v) => `${v / 1000}k`} />
                     <Tooltip content={<CustomTooltip />} />
                     <Area type="monotone" dataKey="receitas" name="Receitas" stroke="#2525e8" fill="url(#incomeGradient)" strokeWidth={3} activeDot={{ r: 5 }} />
                     <Area type="monotone" dataKey="despesas" name="Despesas" stroke="#18a6a6" fill="transparent" strokeWidth={2.5} strokeDasharray="5 5" />
