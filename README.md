@@ -31,7 +31,7 @@ O Nexo foi criado como um projeto de portfólio focado em organização de dados
 
 ## Demonstração
 
-[Acessar o dashboard publicado](https://nexo-financas-pessoais.ronaelmoura240.chatgpt.site)
+[Acessar o dashboard publicado](https://ronaelmoura.github.io/nexo-dashboard-financeiro/)
 
 Os dados exibidos são fictícios e foram criados exclusivamente para demonstrar a interface e suas interações.
 
