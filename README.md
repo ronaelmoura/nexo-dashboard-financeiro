@@ -18,6 +18,7 @@ O Nexo foi criado como um projeto de portfólio focado em organização de dados
 - Cadastro de novas receitas e despesas
 - Opção para ocultar valores sensíveis
 - Acompanhamento de meta financeira
+- Modo escuro com preferência salva entre sessões
 - Navegação adaptada para desktop e dispositivos móveis
 
 ## Tecnologias
