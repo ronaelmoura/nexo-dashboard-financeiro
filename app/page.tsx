@@ -26,8 +26,6 @@ import {
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Pie,
@@ -101,6 +99,10 @@ export default function Home() {
   useEffect(() => {
     const savedTheme = localStorage.getItem("nexo-theme");
     const preferredTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    // localStorage/matchMedia are unavailable during SSR, so the real theme
+    // can only be resolved after mount; setting it here (once) avoids a
+    // hydration mismatch instead of computing it at render time.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTheme(savedTheme === "dark" || savedTheme === "light" ? savedTheme : preferredTheme);
   }, []);
 
@@ -241,10 +243,13 @@ export default function Home() {
 
       {mobileMenu && <button className="backdrop" aria-label="Fechar menu" onClick={() => setMobileMenu(false)} />}
       {modalOpen && (
+        // Mouse-only convenience for closing on backdrop click; the
+        // keyboard/AT-accessible close path is the button below.
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setModalOpen(false)}>
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <form className="modal" onSubmit={addTransaction} onMouseDown={(e) => e.stopPropagation()}>
             <div className="modal-header"><div><h2>Nova transação</h2><p>Registre uma entrada ou saída.</p></div><button type="button" aria-label="Fechar" onClick={() => setModalOpen(false)}><X size={20}/></button></div>
-            <label>Descrição<input name="title" required placeholder="Ex.: Compra no mercado" autoFocus /></label>
+            <label>Descrição<input name="title" required placeholder="Ex.: Compra no mercado" /></label>
             <label>Valor<input name="amount" required min="0.01" step="0.01" type="number" placeholder="0,00" /></label>
             <label>Tipo<select name="kind"><option value="expense">Despesa</option><option value="income">Receita</option></select></label>
             <div className="modal-actions"><button type="button" className="secondary-button" onClick={() => setModalOpen(false)}>Cancelar</button><button className="primary-button" type="submit">Adicionar transação</button></div>
